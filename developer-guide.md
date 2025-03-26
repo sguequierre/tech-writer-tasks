@@ -88,48 +88,6 @@ curl https://api.techwriter.xyz/tasks \
 }
 ```
 
-#### Python code example
-
-```python
-import requests
-
-API_KEY = 'your_api_key'
-BASE_URL = 'https://api.techwriter.xyz'
-
-def list_tasks(status=None, component=None, updatedAfter=None):
-    headers = {
-        'X-API-KEY': API_KEY
-    }
-    
-    params = {
-        'status': status,
-        'component': component,
-        'updatedAfter': updatedAfter
-    }
-
-    # Remove None values from params
-    params = {k: v for k, v in params.items() if v is not None}
-    
-    try:
-        response = requests.get(
-            f'{BASE_URL}/tasks',
-            headers=headers,
-            params=params
-        )
-    
-        response.raise_for_status()
-        return response.json()
-
-    except requests.exceptions.RequestException as e:
-        print(f"Error retrieving tasks: {e}")
-        return None
-
-# Usage
-tasks = list_tasks(status='OPEN', component='API_DOCS', updatedAfter='2025-01-01')
-if tasks:
-    print(f"Retrieved tasks: {tasks}")
-```
-
 ### POST /tasks
 
 Create a new technical writing task.
