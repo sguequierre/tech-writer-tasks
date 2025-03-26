@@ -1,0 +1,325 @@
+<style>
+    /* Body Styling */
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #121212; /* Dark background */
+        color: #e0e0e0; /* Light text for readability */
+        line-height: 1.6;
+        padding: 20px;
+        margin: 0;
+    }
+
+    /* Header Styling */
+    h1, h2 {
+        color:rgb(173, 53, 93); /* Dark pink for headers */
+        font-family: 'Arial', sans-serif;
+        margin-bottom: 20px;
+    }
+
+    h3, h4 {
+        color: #f48fb1; /* Light pink for nested headers */
+        font-family: 'Arial', sans-serif;
+        margin-bottom: 20px;
+    }
+
+    h4 {
+        color:rgb(239, 200, 213); /* Light pink for nested headers */
+        font-family: 'Arial', sans-serif;
+        margin-bottom: 20px;
+    }
+
+    /* Links Styling */
+    a {
+        color: rgb(173, 53, 93); /* Dark pink links */
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    a:hover {
+        color: #f48fb1; /* Light pink on hover */
+        text-decoration: underline;
+    }
+
+    /* Paragraphs */
+    p {
+        color: #e0e0e0; /* Light grey text for readability */
+        margin-bottom: 20px;
+        font-size: 1.1em;
+    }
+
+</style>
+
+# Technical Writer Tasks API Developer Guide
+
+## Introduction
+
+Follow this guide to use the Technical Writer Tasks API.
+
+### Overview 
+
+The Technical Writer Tasks API enables you to keep track of your tasks as a technical writer.
+Use the Technical Writer Tasks API to get or create tasks, including their status, across multiple components in the documentation workspace.
+
+## Authentication
+
+All API requests require authentication using an API key.
+You must include the key in the `X-API-KEY` header for every request.
+
+**Example header:**
+```sh
+X-API-KEY: your_secret_api_key_here
+```
+
+To obtain this key, contact your organization's API administrator.
+Make sure not to share this key publicly.
+
+## Endpoints
+
+### GET /tasks
+Retrieve a list of technical writing tasks with optional filtering.
+
+- **HTTP Method:** GET
+- **URI:** `https://api.techwriter.xyz/tasks`
+
+#### Required headers
+
+- `X-API-KEY`: Your API key.
+
+#### Request parameters
+
+- `status`: Filter tasks by status (OPEN, IN_PROGRESS, COMPLETED)
+- `component`: Filter tasks by documentation component
+- `updatedAfter`: Filter tasks updated after a specific date
+
+#### Example request
+
+```bash
+curl https://api.techwriter.xyz/tasks \
+  -H "X-API-KEY: your_api_key" \
+  -G \
+  -d "status=OPEN" \
+  -d "component=API_DOCS" 
+```
+
+#### Status codes
+
+- `200`: Successful request, an array of tasks returned.
+- `401`: Authentication failed, API key is invalid.
+
+##### Success response example (200)
+
+```json
+[
+    {
+      "task_id": "task_123",
+      "title": "Update Gas Station Docs",
+      "description": "Update Get gas station settings description.",
+      "status": "OPEN",
+      "component": "API_DOCS",
+      "connected_tasks": []
+    },
+    {
+      "task_id": "task_124",
+      "title": "Review SDK Documentation",
+      "description": "Comprehensive review of current SDK docs",
+      "status": "OPEN",
+      "component": "SDK_DOCS",
+      "connected_tasks": []
+    }
+]
+```
+
+##### Error response example (401)
+
+```json
+{
+  "error": "Invalid API key"
+}
+```
+
+#### Python code example
+
+```python
+import requests
+
+API_KEY = 'your_api_key'
+BASE_URL = 'https://api.techwriter.xyz'
+
+def list_tasks(status=None, component=None, updatedAfter=None):
+    headers = {
+        'X-API-KEY': API_KEY
+    }
+    
+    params = {
+        'status': status,
+        'component': component,
+        'updatedAfter': updatedAfter
+    }
+
+    # Remove None values from params
+    params = {k: v for k, v in params.items() if v is not None}
+    
+    try:
+        response = requests.get(
+            f'{BASE_URL}/tasks',
+            headers=headers,
+            params=params
+        )
+    
+        response.raise_for_status()
+        return response.json()
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error retrieving tasks: {e}")
+        return None
+
+# Usage
+tasks = list_tasks(status='OPEN', component='API_DOCS', updatedAfter='2025-01-01')
+if tasks:
+    print(f"Retrieved tasks: {tasks}")
+```
+
+### POST /tasks
+
+Create a new technical writing task.
+
+- **HTTP Method:** POST
+- **URI:** `https://api.techwriter.xyz/tasks`
+
+#### Required headers
+
+- `X-API-KEY`: Your API key.
+- `Content-Type`: `application/json`
+
+#### Request body
+
+```json
+{
+  "title": "Update Gas Station Docs",
+  "description": "Update Get gas station settings description.",
+  "status": "OPEN",
+  "component": "API_DOCS",
+  "connected_tasks": ["task_id_1", "task_id_2"]
+}
+```
+
+#### Example request
+
+```bash
+curl https://api.techwriter.xyz/tasks \
+  -X POST \
+  -H "X-API-KEY: your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Update Gas Station Docs",
+    "description": "Update Get gas station settings description.",
+    "status": "OPEN",
+    "component": "API_DOCS",
+    "connected_tasks": ["task_id_1", "task_id_2"]
+  }'
+```
+
+#### Status codes
+
+- `201`: Task resource successfully created.
+- `400`: Invalid task data.
+- `401`: Authentication failed, API key missing or invalid.
+
+##### Success response example (201)
+
+```json
+{
+  "task_id": "task_125",
+  "title": "Update Gas Station Docs",
+  "description": "Update Get gas station settings description.",
+  "status": "OPEN",
+  "component": "API_DOCS",
+  "connected_tasks": ["task_id_1", "task_id_2"]
+}
+```
+
+##### Error response examples
+
+###### **400**
+```json
+{
+  "error": "Invalid task data"
+}
+```
+
+###### **401**
+```json
+{
+  "error": "Invalid API key"
+}
+```
+
+#### Python code example
+```python
+import requests
+
+API_KEY = 'your_api_key'
+BASE_URL = 'https://api.techwriter.xyz'
+
+def create_task(title, description, status, component):
+    headers = {
+        'X-API-KEY': API_KEY,
+        'Content-Type': 'application/json'
+    }
+    
+    task_data = {
+        'title': title,
+        'description': description,
+        'status': status,
+        'component': component
+    }
+    
+    try:
+        response = requests.post(
+            f'{BASE_URL}/tasks', 
+            json=task_data, 
+            headers=headers
+        )
+    
+        response.raise_for_status()
+        return response.json()
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error creating task: {e}")
+        return None
+
+# Usage
+new_task = create_task(
+    'Update Gas Station Docs',
+    'Update Get gas station settings description',
+    'OPEN',
+    'API_DOCS'
+)
+if new_task:
+    print(f"New task created: {new_task}")
+```
+
+## Best practices
+
+### API key security
+
+- Store keys in environment variables
+- Make sure to rotate API keys periodically
+- Never commit API keys to version control
+- Avoid sharing keys across team members
+
+### Rate limits
+
+- Default limit: 100 requests per minute
+- Implement exponential backoff for retries
+- Cache results when possible to reduce API calls
+
+### Error handling
+
+- Always check HTTP status codes
+- Implement robust error handling
+- Log and monitor API interactions
+
+## Support
+
+For additional support, contact: techwriters@example.com

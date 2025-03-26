@@ -1,0 +1,145 @@
+openapi: 3.0.0
+info:
+  title: Technical Writer Tasks API
+  description: API for managing technical writer tasks.
+  version: 1.0.0
+  contact:
+    name: Fireblocks Technical Writing Team
+    email: techwriters@fireblocks.com
+  license:
+    name: Apache 2.0
+tags:
+  - name: Tasks
+    description: Operations related to technical writer tasks.
+servers:
+  - url: https://api.techwriter.xyz
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+  schemas:
+    Task:
+      type: object
+      properties:
+        task_id:
+          type: string
+          example: '1'
+        title:
+          type: string
+          example: 'Update Gas Station Docs'
+        description:
+          type: string
+          example: 'Update Get gas station settings description'
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        component:
+          $ref: '#/components/schemas/ComponentEnum'
+          example: API_DOCS
+        connected_tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectedTask'
+    TaskInput:
+      type: object
+      properties:
+        title:
+          type: string
+          example: 'Update Gas Station Docs'
+        description:
+          example: 'Update Get gas station settings description.'
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        component:
+          $ref: '#/components/schemas/ComponentEnum'
+        connected_tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectedTask'
+    ConnectedTask:
+      type: object
+      properties:
+        task_id:
+          type: string
+          example: '2'
+        title:
+          type: string
+          example: 'Update Authentication Docs'
+        description:
+          type: string
+          example: 'Update authentication docs for new authentication mechanism.'
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+    StatusEnum:
+      type: string
+      enum: [OPEN, IN_PROGRESS, COMPLETED]
+      example: "OPEN"
+    ComponentEnum:
+      type: string
+      enum: [API_DOCS, HELP_CENTER, SDK_DOCS, OAS_FILE]
+      example: "API_DOCS"
+security:
+  - ApiKeyAuth: []
+paths:
+  /tasks:
+    get:
+      summary: Retrieve all technical writer tasks.
+      tags:
+        - Tasks
+      operationId: getTasks
+      parameters:
+        - name: status
+          in: query
+          description: Filter tasks by status.
+          required: false
+          schema:
+            $ref: '#/components/schemas/StatusEnum'
+        - name: component
+          in: query
+          description: Filter tasks by component.
+          required: false
+          schema:
+            $ref: '#/components/schemas/ComponentEnum'
+        - name: updatedAfter
+          in: query
+          description: Filter tasks that have been updated after a specific date (YYYY-MM-DD).
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: An array of tasks.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        '401':
+          description: Unauthorized, API key missing or invalid.
+  /task:
+    post:
+      summary: Add a new technical writer task.
+      tags:
+        - Tasks
+      operationId: addTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskInput'
+      responses:
+        '201':
+          description: Task successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid task data.
+        '401':
+          description: Unauthorized, API key missing or invalid.
