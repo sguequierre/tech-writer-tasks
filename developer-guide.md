@@ -219,9 +219,9 @@ if new_task:
 
 ### Rate limits
 
-- Default limit: 100 requests per minute
 - Implement exponential backoff for retries
 - Cache results when possible to reduce API calls
+- Contact techwriters@fireblocks.com for precise rate limit information
 
 ### Error handling
 
@@ -231,4 +231,4 @@ if new_task:
 
 ## Support
 
-For additional support, contact: techwriters@example.com
+For additional support, contact: techwriters@fireblocks.com
