@@ -39,7 +39,7 @@ Retrieve a list of technical writing tasks with optional filtering.
 #### Request parameters
 
 - `status`: Filter tasks by status (OPEN, IN_PROGRESS, COMPLETED)
-- `component`: Filter tasks by documentation component
+- `component`: Filter tasks by documentation component (API_DOCS, HELP_CENTER, SDK_DOCS, OAS_FILE)
 - `updatedAfter`: Filter tasks updated after a specific date
 
 #### Example request
