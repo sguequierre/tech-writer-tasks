@@ -1,4 +1,4 @@
-# Sierra's Technical Writing Test
+# Sierra's Technical Writing Test 🔥
 
 Hello!
 Welcome to the repository containing the example developer guide for the Technical Writer Tasks API, along with the updated OpenAPI specification.
