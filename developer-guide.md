@@ -88,12 +88,12 @@ curl https://api.techwriter.xyz/tasks \
 }
 ```
 
-### POST /tasks
+### POST /task
 
 Create a new technical writing task.
 
 - **HTTP Method:** POST
-- **URI:** `https://api.techwriter.xyz/tasks`
+- **URI:** `https://api.techwriter.xyz/task`
 
 #### Required headers
 
@@ -115,7 +115,7 @@ Create a new technical writing task.
 #### Example request
 
 ```bash
-curl https://api.techwriter.xyz/tasks \
+curl https://api.techwriter.xyz/task \
   -X POST \
   -H "X-API-KEY: your_api_key" \
   -H "Content-Type: application/json" \
@@ -170,7 +170,7 @@ import requests
 API_KEY = 'your_api_key'
 BASE_URL = 'https://api.techwriter.xyz'
 
-def create_task(title, description, status, component):
+def create_task(title, description, status, component, connected_tasks=None):
     headers = {
         'X-API-KEY': API_KEY,
         'Content-Type': 'application/json'
@@ -182,10 +182,14 @@ def create_task(title, description, status, component):
         'status': status,
         'component': component
     }
+
+    # Only add connected_tasks if it's provided and not None
+    if connected_tasks is not None:
+        task_data['connected_tasks'] = connected_tasks
     
     try:
         response = requests.post(
-            f'{BASE_URL}/tasks', 
+            f'{BASE_URL}/task', 
             json=task_data, 
             headers=headers
         )
@@ -202,7 +206,8 @@ new_task = create_task(
     'Update Gas Station Docs',
     'Update Get gas station settings description',
     'OPEN',
-    'API_DOCS'
+    'API_DOCS',
+    connected_tasks=['task_123', 'task_124']
 )
 if new_task:
     print(f"New task created: {new_task}")

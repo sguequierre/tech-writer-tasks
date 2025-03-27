@@ -25,7 +25,7 @@ components:
       properties:
         task_id:
           type: string
-          example: '1'
+          example: 'task_123'
         title:
           type: string
           example: 'Update Gas Station Docs'
@@ -63,7 +63,7 @@ components:
       properties:
         task_id:
           type: string
-          example: '2'
+          example: 'task_123'
         title:
           type: string
           example: 'Update Authentication Docs'
